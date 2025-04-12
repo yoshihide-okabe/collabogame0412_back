@@ -33,3 +33,10 @@ class TroubleDetailResponse(TroubleResponse):
 class TroublesListResponse(BaseModel):
     troubles: List[TroubleResponse]
     total: int
+    
+class TroubleCategoryResponse(BaseModel):
+    category_id: int
+    name: str
+    
+    class Config:
+        orm_mode = True

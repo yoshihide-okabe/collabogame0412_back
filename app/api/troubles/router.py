@@ -7,7 +7,7 @@ from datetime import datetime
 # 相対インポートに修正
 from ...core.database import get_db
 from ...core.dependencies import get_current_user
-from ...api.auth.models import User
+from ..users.models import User
 from ...api.projects.models import CoCreationProject
 from .models import Trouble
 

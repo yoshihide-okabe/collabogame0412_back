@@ -7,7 +7,7 @@ from datetime import datetime
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
-from app.api.auth.models import User
+from app.api.users.models import User
 from app.api.projects.models import CoCreationProject, UserProjectFavorite, ProjectCategory
 from app.api.projects.schemas import (
     ProjectResponse, 
@@ -63,6 +63,13 @@ def get_projects(
         # プロジェクト作成者の情報取得
         creator = db.query(User).filter(User.user_id == project.creator_user_id).first()
 
+        # カテゴリー情報の取得 (追加)
+        category = None
+        if hasattr(project, 'category_id') and project.category_id:
+            category = db.query(ProjectCategory).filter(
+                ProjectCategory.category_id == project.category_id
+            ).first()
+
         return ProjectResponse(
             project_id=project.project_id,
             title=project.title,
@@ -74,7 +81,12 @@ def get_projects(
             updated_at=project.updated_at if hasattr(project, 'updated_at') else None,
             likes=likes,
             comments=comments,
-            is_favorite=is_favorite
+            is_favorite=is_favorite,
+            category_id=project.category_id if hasattr(project, 'category_id') else None,  # 追加
+            category=CategoryResponse(
+                category_id=category.category_id,
+                name=category.name
+            ) if category else None  # 追加
         )
 
     return ProjectListResponse(
@@ -137,13 +149,25 @@ def create_project(
             detail="自分以外のユーザーIDでプロジェクトを作成することはできません"
         )
 
+    # カテゴリーが指定されている場合は存在確認 (追加)
+    if hasattr(project, 'category_id') and project.category_id:
+        category = db.query(ProjectCategory).filter(
+            ProjectCategory.category_id == project.category_id
+        ).first()
+        if not category:
+            raise HTTPException(
+                status_code=404,
+                detail="指定されたカテゴリーが見つかりません"
+            )
+
     # プロジェクトを作成
     new_project = CoCreationProject(
         title=project.title,
         summary=project.summary,
         description=project.description,
         creator_user_id=current_user.user_id,
-        created_at=datetime.now()
+        created_at=datetime.now(),
+        category_id=project.category_id if hasattr(project, 'category_id') else None  # 追加
     )
     
     db.add(new_project)
@@ -182,6 +206,13 @@ def get_project(
     # プロジェクト作成者の情報取得
     creator = db.query(User).filter(User.user_id == project.creator_user_id).first()
     
+    # カテゴリー情報の取得 (追加)
+    category = None
+    if hasattr(project, 'category_id') and project.category_id:
+        category = db.query(ProjectCategory).filter(
+            ProjectCategory.category_id == project.category_id
+        ).first()
+    
     return ProjectResponse(
         project_id=project.project_id,
         title=project.title,
@@ -193,7 +224,12 @@ def get_project(
         updated_at=project.updated_at,
         likes=likes,
         comments=comments,
-        is_favorite=is_favorite
+        is_favorite=is_favorite,
+        category_id=project.category_id if hasattr(project, 'category_id') else None,  # 追加
+            category=CategoryResponse(
+                category_id=category.category_id,
+                name=category.name
+            ) if category else None  # 追加
     )
 
 @router.put("/{project_id}", response_model=ProjectResponse)
@@ -219,6 +255,17 @@ def update_project(
             detail="このプロジェクトを更新する権限がありません"
         )
     
+    # カテゴリーが指定されている場合は存在確認 (追加)
+    if hasattr(project_update, 'category_id') and project_update.category_id:
+        category = db.query(ProjectCategory).filter(
+            ProjectCategory.category_id == project_update.category_id
+        ).first()
+        if not category:
+            raise HTTPException(
+                status_code=404,
+                detail="指定されたカテゴリーが見つかりません"
+            )
+    
     # 更新データを適用
     update_data = project_update.dict(exclude_unset=True)
     
@@ -234,6 +281,13 @@ def update_project(
     # プロジェクト作成者の情報取得
     creator = db.query(User).filter(User.user_id == db_project.creator_user_id).first()
     
+    # カテゴリー情報の取得 (追加)
+    category = None
+    if hasattr(db_project, 'category_id') and db_project.category_id:
+        category = db.query(ProjectCategory).filter(
+            ProjectCategory.category_id == db_project.category_id
+        ).first()
+    
     return ProjectResponse(
         project_id=db_project.project_id,
         title=db_project.title,
@@ -245,5 +299,10 @@ def update_project(
         updated_at=db_project.updated_at,
         likes=24,  # 仮の値
         comments=8,  # 仮の値
-        is_favorite=False  # 更新後のお気に入り状態は別途取得必要
+        is_favorite=False,  # 更新後のお気に入り状態は別途取得必要
+        category_id=db_project.category_id if hasattr(db_project, 'category_id') else None,  # 追加
+        category=CategoryResponse(
+            category_id=category.category_id,
+            name=category.name
+        ) if category else None  # 追加
     )

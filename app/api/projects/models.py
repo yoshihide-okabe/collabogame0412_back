@@ -16,6 +16,7 @@ class CoCreationProject(Base):
 
     project_id = Column(Integer, primary_key=True, index=True)
     creator_user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    category_id = Column(Integer, ForeignKey("project_categories.category_id"), nullable=True)  # 追加: カテゴリーIDの外部キー
     title = Column(Text, nullable=False)
     summary = Column(Text, nullable=True)
     description = Column(Text, nullable=True)
@@ -24,6 +25,7 @@ class CoCreationProject(Base):
     
     # リレーションシップ
     creator = relationship("User", back_populates="projects")
+    category = relationship("ProjectCategory", back_populates="projects")  # 追加: カテゴリーとのリレーションシップ
     troubles = relationship("Trouble", back_populates="project")
     favorites = relationship("UserProjectFavorite", back_populates="project")
     participants = relationship("UserProjectParticipation", back_populates="project")

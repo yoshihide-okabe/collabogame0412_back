@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..core.database import get_db
 from ..core.config import settings
-from ..api.auth.models import User  # 絶対インポートを相対インポートに変更
+from ..api.users.models import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
