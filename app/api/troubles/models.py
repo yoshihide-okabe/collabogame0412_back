@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from ...models.base import Base  # 相対インポートに変更
+
+from app.core.database import Base
 
 class Trouble(Base):
     __tablename__ = "troubles"
@@ -11,7 +12,7 @@ class Trouble(Base):
     description = Column(Text, nullable=False)
     category = Column(String, index=True, nullable=False)
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    creator_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # 名前を統一: author_id → creator_user_id
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     

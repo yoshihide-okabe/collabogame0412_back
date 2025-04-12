@@ -2,8 +2,7 @@ from sqlalchemy import Column, Integer, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-# 相対インポートに変更
-from ...core.database import Base
+from app.core.database import Base  # 集約したBaseをインポート
 
 # ↓ 修正: User を明示的にインポート
 from app.api.users.models import User  # ← 修正
@@ -13,12 +12,15 @@ class ProjectCategory(Base):
 
     category_id = Column(Integer, primary_key=True, index=True)
     name = Column(Text, nullable=False)
+    
+    # 文字列を使用したリレーションシップ
+    projects = relationship("CoCreationProject", back_populates="category")
 
 class CoCreationProject(Base):
     __tablename__ = "co_creation_projects"
 
     project_id = Column(Integer, primary_key=True, index=True)
-    creator_user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
+    creator_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     category_id = Column(Integer, ForeignKey("project_categories.category_id"), nullable=True)  # 追加: カテゴリーIDの外部キー
     title = Column(Text, nullable=False)
     summary = Column(Text, nullable=True)

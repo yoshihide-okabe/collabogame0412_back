@@ -2,11 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Foreign
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-# 相対インポートに変更
-from ...models.base import Base
-
-# 追加
-from app.api.users.models import User
+from app.core.database import Base  # 集約したBaseをインポート
 
 class User(Base):
     __tablename__ = "users"
