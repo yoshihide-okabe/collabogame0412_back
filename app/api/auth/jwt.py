@@ -13,7 +13,7 @@ from ..users.models import User
 from ..users.schemas import TokenData
 
 # OAuth2のパスワードベアラースキーマを定義
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
     """

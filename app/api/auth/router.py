@@ -42,7 +42,7 @@ def login_for_access_token(
     return {
         "access_token": access_token, 
         "token_type": "bearer",
-        "user_id": user.id,
+        "user_id": user.user_id,
         "user_name": user.name
     }
 
@@ -67,14 +67,14 @@ def login(
     # アクセストークンを生成
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.id}, 
+        data={"sub": user.user_id}, 
         expires_delta=access_token_expires
     )
     
     return {
         "access_token": access_token, 
         "token_type": "bearer",
-        "user_id": user.id,
+        "user_id": user.user_id,
         "user_name": user.name
     }
 
@@ -119,13 +119,13 @@ def register_user(
     # アクセストークンを生成
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.id}, 
+        data={"sub": user.user_id}, 
         expires_delta=access_token_expires
     )
     
     return {
         "access_token": access_token, 
         "token_type": "bearer",
-        "user_id": user.id,
+        "user_id": user.user_id,
         "user_name": user.name
     }

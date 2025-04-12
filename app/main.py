@@ -42,6 +42,9 @@ app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["u
 app.include_router(messages_router, prefix=f"{settings.API_V1_STR}/messages", tags=["messages"])
 app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 
+# ルートレベルに /token エンドポイントを追加
+app.post("/token", response_model=Token)(login_for_access_token)
+
 @app.get("/")
 def read_root():
     return {"message": f"Welcome to {settings.PROJECT_NAME}"}

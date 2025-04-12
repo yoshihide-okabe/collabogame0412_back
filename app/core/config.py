@@ -1,9 +1,17 @@
 import os
+from typing import List  # このインポートを追加
 from dotenv import load_dotenv
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 
 # .envファイルを読み込む
 load_dotenv()
+
+# デバッグ出力
+print("環境変数の値：")
+print(f"DB_HOST: {os.getenv('DB_HOST')}")
+print(f"DB_USER: {os.getenv('DB_USER')}")
+print(f"DB_PASSWORD: {'[設定済み]' if os.getenv('DB_PASSWORD') else '[未設定]'}")
+print(f"DB_NAME: {os.getenv('DB_NAME')}")
 
 class Settings(BaseSettings):
     # サーバー設定
@@ -24,14 +32,29 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = os.getenv("DB_PASSWORD", "")
     DB_NAME: str = os.getenv("DB_NAME", "collabo_db")
     
-    # SQLAlchemy接続文字列
-    SQLALCHEMY_DATABASE_URL: str = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    
     # CORS設定
-    CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+    CORS_ORIGINS_STR: str = Field(default="http://localhost:3000")
     
     # 開発環境フラグ
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
+    
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        
+    # プロパティとしてCORS_ORIGINSを実装
+    @property
+    def CORS_ORIGINS(self) -> List[str]:
+        return [origin.strip() for origin in self.CORS_ORIGINS_STR.split(",")]
+    
+    # SQLAlchemy接続文字列もプロパティとして実装
+    @property
+    def SQLALCHEMY_DATABASE_URL(self) -> str:
+        return f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 # 設定のインスタンスを作成
 settings = Settings()
+
+# デバッグ出力
+print("Settings インスタンスの値：")
+print(f"SQLALCHEMY_DATABASE_URL: {settings.SQLALCHEMY_DATABASE_URL}")

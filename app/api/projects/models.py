@@ -38,7 +38,7 @@ class CoCreationProject(Base):
 class UserProjectFavorite(Base):
     __tablename__ = "user_project_favorites"
 
-    user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     project_id = Column(Integer, ForeignKey("co_creation_projects.project_id"), primary_key=True)
     
     # リレーションシップ
@@ -48,7 +48,7 @@ class UserProjectFavorite(Base):
 class UserProjectParticipation(Base):
     __tablename__ = "user_project_participation"
 
-    user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     project_id = Column(Integer, ForeignKey("co_creation_projects.project_id"), primary_key=True)
     selected_at = Column(DateTime, nullable=False)
     
