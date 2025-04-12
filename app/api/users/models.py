@@ -5,6 +5,9 @@ from sqlalchemy.sql import func
 # 相対インポートに変更
 from ...models.base import Base
 
+# 追加
+from app.api.users.models import User
+
 class User(Base):
     __tablename__ = "users"
     
@@ -17,8 +20,9 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # リレーションシップ - 文字列で参照する
-    projects = relationship("Project", back_populates="author")
-    favorite_projects = relationship("UserFavoriteProject", back_populates="user")
+    projects = relationship("CoCreationProject", back_populates="creator")  # ← 修正
+    favorite_projects = relationship("UserProjectFavorite", back_populates="user")  # ← 修正
+    participating_projects = relationship("UserProjectParticipation", back_populates="user")  # ← 追加
     messages = relationship("Message", back_populates="user")
     troubles = relationship("Trouble", back_populates="author")
     

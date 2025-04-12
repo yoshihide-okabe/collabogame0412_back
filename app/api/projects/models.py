@@ -5,6 +5,9 @@ from sqlalchemy.sql import func
 # 相対インポートに変更
 from ...core.database import Base
 
+# ↓ 修正: User を明示的にインポート
+from app.api.users.models import User  # ← 修正
+
 class ProjectCategory(Base):
     __tablename__ = "project_categories"
 
@@ -24,7 +27,7 @@ class CoCreationProject(Base):
     updated_at = Column(DateTime, nullable=True)
     
     # リレーションシップ
-    creator = relationship("User", back_populates="projects")
+    creator = relationship(User, back_populates="projects")
     category = relationship("ProjectCategory", back_populates="projects")  # 追加: カテゴリーとのリレーションシップ
     troubles = relationship("Trouble", back_populates="project")
     favorites = relationship("UserProjectFavorite", back_populates="project")
@@ -37,7 +40,7 @@ class UserProjectFavorite(Base):
     project_id = Column(Integer, ForeignKey("co_creation_projects.project_id"), primary_key=True)
     
     # リレーションシップ
-    user = relationship("User", back_populates="favorite_projects")
+    user = relationship(User, back_populates="favorite_projects")
     project = relationship("CoCreationProject", back_populates="favorites")
 
 class UserProjectParticipation(Base):
@@ -48,5 +51,5 @@ class UserProjectParticipation(Base):
     selected_at = Column(DateTime, nullable=False)
     
     # リレーションシップ
-    user = relationship("User", back_populates="participating_projects")
+    user = relationship(User, back_populates="participating_projects")
     project = relationship("CoCreationProject", back_populates="participants")
