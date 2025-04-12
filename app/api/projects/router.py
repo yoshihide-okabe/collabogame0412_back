@@ -25,7 +25,7 @@ def get_projects(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    user_id = current_user.user_id
+    user_id = current_user.id
     
     # 新着プロジェクト
     new_projects = (
@@ -61,7 +61,7 @@ def get_projects(
         ).first() is not None
 
         # プロジェクト作成者の情報取得
-        creator = db.query(User).filter(User.user_id == project.creator_user_id).first()
+        creator = db.query(User).filter(User.id == project.creator_user_id).first()
 
         # カテゴリー情報の取得 (追加)
         category = None
@@ -143,7 +143,7 @@ def create_project(
         raise HTTPException(status_code=400, detail="必須項目を入力してください")
 
     # 自分以外のユーザーIDでプロジェクトを作成できないようにする
-    if project.creator_user_id != current_user.user_id:
+    if project.creator_user_id != current_user.id:
         raise HTTPException(
             status_code=403, 
             detail="自分以外のユーザーIDでプロジェクトを作成することはできません"
@@ -165,7 +165,7 @@ def create_project(
         title=project.title,
         summary=project.summary,
         description=project.description,
-        creator_user_id=current_user.user_id,
+        creator_user_id=current_user.id,
         created_at=datetime.now(),
         category_id=project.category_id if hasattr(project, 'category_id') else None  # 追加
     )
@@ -199,12 +199,12 @@ def get_project(
     is_favorite = False
     if current_user:
         is_favorite = db.query(UserProjectFavorite).filter(
-            UserProjectFavorite.user_id == current_user.user_id,
+            UserProjectFavorite.user_id == current_user.id,
             UserProjectFavorite.project_id == project_id
         ).first() is not None
     
     # プロジェクト作成者の情報取得
-    creator = db.query(User).filter(User.user_id == project.creator_user_id).first()
+    creator = db.query(User).filter(User.id == project.creator_user_id).first()
     
     # カテゴリー情報の取得 (追加)
     category = None
@@ -249,7 +249,7 @@ def update_project(
         )
     
     # プロジェクトの所有者のみが更新可能
-    if db_project.creator_user_id != current_user.user_id:
+    if db_project.creator_user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="このプロジェクトを更新する権限がありません"
@@ -279,7 +279,7 @@ def update_project(
     db.refresh(db_project)
     
     # プロジェクト作成者の情報取得
-    creator = db.query(User).filter(User.user_id == db_project.creator_user_id).first()
+    creator = db.query(User).filter(User.id == db_project.creator_user_id).first()
     
     # カテゴリー情報の取得 (追加)
     category = None

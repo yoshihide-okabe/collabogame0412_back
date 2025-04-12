@@ -31,7 +31,7 @@ def create_trouble(
         description=trouble.description,
         project_id=trouble.project_id,
         category_id=trouble.category_id,
-        creator_user_id=current_user.user_id,
+        creator_user_id=current_user.id,
         created_at=datetime.now(),
         status="未解決"
     )
@@ -41,7 +41,7 @@ def create_trouble(
     db.refresh(new_trouble)
     
     return schemas.TroubleResponse(
-        trouble_id=new_trouble.trouble_id,
+        trouble_id=new_trouble.id,
         description=new_trouble.description,
         category_id=new_trouble.category_id,
         project_id=new_trouble.project_id,
@@ -94,14 +94,14 @@ def get_troubles(
         project = db.query(CoCreationProject).filter(CoCreationProject.project_id == trouble.project_id).first()
         
         # 作成者情報取得
-        creator = db.query(User).filter(User.user_id == trouble.creator_user_id).first()
+        creator = db.query(User).filter(User.id == trouble.creator_user_id).first()
         
         # コメント数取得（メッセージとして扱う）
         # comments_count = db.query(TroubleMessage).filter(TroubleMessage.trouble_id == trouble.trouble_id).count()
         comments_count = 0  # 仮実装
         
         trouble_list.append(schemas.TroubleResponse(
-            trouble_id=trouble.trouble_id,
+            trouble_id=trouble.id,
             description=trouble.description,
             category_id=trouble.category_id,
             project_id=trouble.project_id,
@@ -133,14 +133,14 @@ def get_trouble_detail(
     project = db.query(CoCreationProject).filter(CoCreationProject.project_id == trouble.project_id).first()
     
     # 作成者情報取得
-    creator = db.query(User).filter(User.user_id == trouble.creator_user_id).first()
+    creator = db.query(User).filter(User.id == trouble.creator_user_id).first()
     
     # コメント数取得（メッセージとして扱う）
     # comments_count = db.query(TroubleMessage).filter(TroubleMessage.trouble_id == trouble.trouble_id).count()
     comments_count = 0  # 仮実装
     
     return schemas.TroubleDetailResponse(
-        trouble_id=trouble.trouble_id,
+        trouble_id=trouble.id,
         description=trouble.description,
         category_id=trouble.category_id,
         project_id=trouble.project_id,
@@ -167,14 +167,14 @@ def update_trouble(
         raise HTTPException(status_code=404, detail="お困りごとが見つかりません")
     
     # 作成者のみ更新可能
-    if trouble.creator_user_id != current_user.user_id:
+    if trouble.creator_user_id != current_user.id:
         raise HTTPException(status_code=403, detail="自分のお困りごとのみ更新できます")
     
     # 更新処理
     if trouble_update.description is not None:
         trouble.description = trouble_update.description
-    if trouble_update.category_id is not None:
-        trouble.category_id = trouble_update.category_id
+    if trouble_update.category is not None:
+        trouble.category_id = trouble_update.category
     if trouble_update.status is not None:
         if trouble_update.status not in ["未解決", "解決"]:
             raise HTTPException(status_code=400, detail="ステータスは「未解決」または「解決」のみ設定可能です")
@@ -187,7 +187,7 @@ def update_trouble(
     project = db.query(CoCreationProject).filter(CoCreationProject.project_id == trouble.project_id).first()
     
     return schemas.TroubleResponse(
-        trouble_id=trouble.trouble_id,
+        trouble_id=trouble.id,
         description=trouble.description,
         category_id=trouble.category_id,
         project_id=trouble.project_id,

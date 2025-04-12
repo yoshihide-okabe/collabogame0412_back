@@ -5,7 +5,8 @@ from typing import List, Optional
 class TroubleBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=100, description="お困りごとのタイトル")
     description: str = Field(..., min_length=10, max_length=1000, description="お困りごとの詳細説明")
-    category: str = Field(..., description="お困りごとのカテゴリー")
+    category_id: str = Field(..., description="お困りごとのカテゴリー")
+    status: Optional[str] = Field(None, description="お困りごとの状態 ('未解決' または '解決')")
 
 class TroubleCreate(TroubleBase):
     project_id: int = Field(..., description="関連するプロジェクトID")

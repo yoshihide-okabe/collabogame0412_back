@@ -20,6 +20,7 @@ class User(Base):
     projects = relationship("Project", back_populates="author")
     favorite_projects = relationship("UserFavoriteProject", back_populates="user")
     messages = relationship("Message", back_populates="user")
+    troubles = relationship("Trouble", back_populates="author")
     
     def get_categories_list(self):
         """カテゴリー文字列をリストに変換"""
