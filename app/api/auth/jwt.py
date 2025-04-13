@@ -6,11 +6,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-# 相対インポートに変更
-from ...core.security import verify_password, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from ...core.database import get_db
-from ..users.models import User
-from ..users.schemas import TokenData
+from app.core.security import verify_password, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.database import get_db
+from app.api.users.models import User
+from app.api.users.schemas import TokenData
 
 # OAuth2のパスワードベアラースキーマを定義
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -51,38 +50,3 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
     return encoded_jwt
-
-def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
-    """
-    現在のユーザーを取得する
-    
-    :param db: データベースセッション
-    :param token: アクセストークン
-    :return: 現在のユーザー
-    :raises: 認証エラーの場合はHTTPException
-    """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="認証情報が無効です",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    try:
-        # トークンをデコード
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("sub")
-        
-        if user_id is None:
-            raise credentials_exception
-        
-        token_data = TokenData(user_id=user_id)
-    except JWTError:
-        raise credentials_exception
-    
-    # ユーザーを取得
-    user = db.query(User).filter(User.user_id == token_data.user_id).first()
-    
-    if user is None:
-        raise credentials_exception
-    
-    return user

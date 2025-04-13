@@ -10,6 +10,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # コアの設定をインポート
 from app.core.config import Settings
 
+# 認証関連のインポートを追加
+from app.api.users.schemas import Token
+from app.api.auth.router import login_for_access_token
+
 # 設定のインスタンスを作成
 settings = Settings()
 

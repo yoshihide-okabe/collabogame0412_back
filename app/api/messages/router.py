@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 # 相対インポートに修正
 from app.core.database import get_db
-from app.api.auth.jwt import get_current_user
+from app.core.dependencies import get_current_user
 from app.api.users.models import User
 from app.api.troubles.models import Trouble
 from .models import Message

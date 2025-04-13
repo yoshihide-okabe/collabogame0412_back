@@ -13,6 +13,19 @@ print(f"DB_USER: {os.getenv('DB_USER')}")
 print(f"DB_PASSWORD: {'[設定済み]' if os.getenv('DB_PASSWORD') else '[未設定]'}")
 print(f"DB_NAME: {os.getenv('DB_NAME')}")
 
+# 環境変数のパース問題を修正するヘルパー関数
+def parse_int_env(env_name, default_value):
+    try:
+        value_str = os.getenv(env_name, str(default_value))
+        # 数値部分のみを抽出
+        match = re.match(r'\d+', value_str)
+        if match:
+            return int(match.group(0))
+        return default_value
+    except (ValueError, AttributeError):
+        print(f"Warning: {env_name} could not be parsed, using default: {default_value}")
+        return default_value
+
 class Settings(BaseSettings):
     # サーバー設定
     HOST: str = os.getenv("HOST", "127.0.0.1")
@@ -58,3 +71,4 @@ settings = Settings()
 # デバッグ出力
 print("Settings インスタンスの値：")
 print(f"SQLALCHEMY_DATABASE_URL: {settings.SQLALCHEMY_DATABASE_URL}")
+print(f"ACCESS_TOKEN_EXPIRE_MINUTES: {settings.ACCESS_TOKEN_EXPIRE_MINUTES}")
