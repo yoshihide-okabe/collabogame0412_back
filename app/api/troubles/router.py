@@ -9,7 +9,7 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.api.users.models import User
 from app.api.projects.models import CoCreationProject
-from app.api.trouble.models import Trouble
+from app.api.troubles.models import Trouble
 
 from . import schemas
 
@@ -138,7 +138,7 @@ def get_trouble_detail(
     comments_count = 0  # 仮実装
     
     return schemas.TroubleDetailResponse(
-        trouble_id=trouble.torouble_id,
+        trouble_id=trouble.trouble_id,
         description=trouble.description,
         category_id=trouble.category_id,
         project_id=trouble.project_id,

@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List  # このインポートを追加
 from dotenv import load_dotenv
 from pydantic import BaseSettings, Field
