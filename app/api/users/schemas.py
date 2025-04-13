@@ -1,9 +1,7 @@
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
-
-# 相対インポートに変更
-from ...schemas.base import BaseSchemaModel
+from app.schemas.base import BaseSchemaModel
 
 class UserBase(BaseSchemaModel):
     name: str = Field(..., min_length=1, max_length=50, description="ユーザー名")

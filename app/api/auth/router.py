@@ -4,13 +4,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-
-# 相対インポートに変更
-from ...core.database import get_db
-from ...core.security import get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES
-from .jwt import authenticate_user, create_access_token
-from ..users.models import User
-from ..users.schemas import UserCreate, UserResponse, Token
+from app.core.database import get_db
+from app.core.security import get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.api.auth.jwt import authenticate_user, create_access_token
+from app.users.models import User
+from app.users.schemas import UserCreate, UserResponse, Token
 
 router = APIRouter()
 
@@ -35,7 +33,7 @@ def login_for_access_token(
     # アクセストークンを生成
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.id}, 
+        data={"sub": user.user_id}, 
         expires_delta=access_token_expires
     )
     

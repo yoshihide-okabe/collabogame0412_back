@@ -4,12 +4,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime
 
-# 相対インポートに修正
-from ...core.database import get_db
-from ...core.dependencies import get_current_user
-from ..users.models import User
-from ...api.projects.models import CoCreationProject
-from .models import Trouble
+# 相対インポートを修正
+from app.core.database import get_db
+from app.core.dependencies import get_current_user
+from app.api.users.models import User
+from app.api.projects.models import CoCreationProject
+from app.api.trouble.models import Trouble
 
 from . import schemas
 
@@ -31,7 +31,7 @@ def create_trouble(
         description=trouble.description,
         project_id=trouble.project_id,
         category_id=trouble.category_id,
-        creator_user_id=current_user.id,
+        creator_user_id=current_user.user_id,
         created_at=datetime.now(),
         status="未解決"
     )
@@ -41,7 +41,7 @@ def create_trouble(
     db.refresh(new_trouble)
     
     return schemas.TroubleResponse(
-        trouble_id=new_trouble.id,
+        trouble_id=new_trouble.trouble_id,
         description=new_trouble.description,
         category_id=new_trouble.category_id,
         project_id=new_trouble.project_id,
@@ -93,15 +93,13 @@ def get_troubles(
         # プロジェクト情報取得
         project = db.query(CoCreationProject).filter(CoCreationProject.project_id == trouble.project_id).first()
         
-        # 作成者情報取得
-        creator = db.query(User).filter(User.id == trouble.creator_user_id).first()
-        
+       
         # コメント数取得（メッセージとして扱う）
         # comments_count = db.query(TroubleMessage).filter(TroubleMessage.trouble_id == trouble.trouble_id).count()
         comments_count = 0  # 仮実装
         
         trouble_list.append(schemas.TroubleResponse(
-            trouble_id=trouble.id,
+            trouble_id=trouble.trouble_id,
             description=trouble.description,
             category_id=trouble.category_id,
             project_id=trouble.project_id,
@@ -133,14 +131,14 @@ def get_trouble_detail(
     project = db.query(CoCreationProject).filter(CoCreationProject.project_id == trouble.project_id).first()
     
     # 作成者情報取得
-    creator = db.query(User).filter(User.id == trouble.creator_user_id).first()
+    creator = db.query(User).filter(User.user_id == trouble.creator_user_id).first()
     
     # コメント数取得（メッセージとして扱う）
     # comments_count = db.query(TroubleMessage).filter(TroubleMessage.trouble_id == trouble.trouble_id).count()
     comments_count = 0  # 仮実装
     
     return schemas.TroubleDetailResponse(
-        trouble_id=trouble.id,
+        trouble_id=trouble.torouble_id,
         description=trouble.description,
         category_id=trouble.category_id,
         project_id=trouble.project_id,
@@ -187,7 +185,7 @@ def update_trouble(
     project = db.query(CoCreationProject).filter(CoCreationProject.project_id == trouble.project_id).first()
     
     return schemas.TroubleResponse(
-        trouble_id=trouble.id,
+        trouble_id=trouble.trouble_id,
         description=trouble.description,
         category_id=trouble.category_id,
         project_id=trouble.project_id,

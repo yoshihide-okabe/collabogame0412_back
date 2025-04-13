@@ -80,7 +80,7 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
         raise credentials_exception
     
     # ユーザーを取得
-    user = db.query(User).filter(User.id == token_data.user_id).first()
+    user = db.query(User).filter(User.user_id == token_data.user_id).first()
     
     if user is None:
         raise credentials_exception

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 
-from ...schemas.base import BaseSchemaModel
+from app.schemas.base import BaseSchemaModel
 
 class MessageBase(BaseSchemaModel):
     content: str = Field(..., min_length=1, description="メッセージの内容")

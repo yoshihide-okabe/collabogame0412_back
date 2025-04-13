@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 # 相対インポートに修正
-from ...core.database import get_db
-from ...api.auth.jwt import get_current_user
-from ...api.users.models import User
-from ...api.troubles.models import Trouble
+from app.core.database import get_db
+from app.api.auth.jwt import get_current_user
+from app.api.users.models import User
+from app.api.troubles.models import Trouble
 from .models import Message
 from . import schemas
 
@@ -32,7 +32,7 @@ def create_message(
     # 新しいメッセージを作成
     new_message = Message(
         content=message.content,
-        user_id=current_user.id,
+        user_id=current_user.user_id,
         trouble_id=message.trouble_id
     )
     
@@ -76,7 +76,7 @@ def get_messages_by_trouble(
     # レスポンスの作成
     message_responses = []
     for msg in messages:
-        user = db.query(User).filter(User.id == msg.user_id).first()
+        user = db.query(User).filter(User.user_id == msg.user_id).first()
         message_responses.append(schemas.MessageResponse(
             id=msg.id,
             content=msg.content,
