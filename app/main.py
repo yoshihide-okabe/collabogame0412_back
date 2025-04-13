@@ -42,9 +42,9 @@ app.add_middleware(
 # ルーターの追加
 app.include_router(troubles_router, prefix=f"{settings.API_V1_STR}/troubles", tags=["troubles"])
 app.include_router(projects_router, prefix=f"{settings.API_V1_STR}/projects", tags=["projects"])
-app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["users"])
-app.include_router(messages_router, prefix=f"{settings.API_V1_STR}/messages", tags=["messages"])
-app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(users_router, prefix=f"{settings.API_V1_STR}/api/users", tags=["users"])
+app.include_router(messages_router, prefix=f"{settings.API_V1_STR}/api/messages", tags=["messages"])
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 
 # ルートレベルに /token エンドポイントを追加
 app.post("/token", response_model=Token)(login_for_access_token)

@@ -9,11 +9,13 @@ class User(Base):
     
     user_id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    categories = Column(String)
-    points = Column(Integer, default=0)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    #hashed_password = Column(String, nullable=False)
+    password = Column(String, nullable=False) 
+    category_id = Column(Integer, ForeignKey("project_categories.category_id"))
+    num_answer = Column(Integer) 
+    point_total = Column(Integer, default=0) 
+    #created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_login_at = Column(DateTime, nullable=False)  
     
     # リレーションシップ - 文字列で参照する
     projects = relationship("CoCreationProject", back_populates="creator")  # ← 修正

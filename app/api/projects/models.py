@@ -20,7 +20,7 @@ class CoCreationProject(Base):
     __tablename__ = "co_creation_projects"
 
     project_id = Column(Integer, primary_key=True, index=True)
-    creator_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    creator_user_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
     category_id = Column(Integer, ForeignKey("project_categories.category_id"), nullable=True)  # 追加: カテゴリーIDの外部キー
     title = Column(Text, nullable=False)
     summary = Column(Text, nullable=True)
@@ -38,7 +38,7 @@ class CoCreationProject(Base):
 class UserProjectFavorite(Base):
     __tablename__ = "user_project_favorites"
 
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True)
     project_id = Column(Integer, ForeignKey("co_creation_projects.project_id"), primary_key=True)
     
     # リレーションシップ
@@ -48,7 +48,7 @@ class UserProjectFavorite(Base):
 class UserProjectParticipation(Base):
     __tablename__ = "user_project_participation"
 
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True)
     project_id = Column(Integer, ForeignKey("co_creation_projects.project_id"), primary_key=True)
     selected_at = Column(DateTime, nullable=False)
     

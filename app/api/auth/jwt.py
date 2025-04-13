@@ -5,8 +5,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
+from app.core.security import verify_password, SECRET_KEY, ALGORITHM
+from app.core.config import settings
 
-from app.core.security import verify_password, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.core.database import get_db
 from app.api.users.models import User
 from app.api.users.schemas import TokenData
@@ -24,7 +25,7 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[Use
     :return: 認証されたユーザー、または認証失敗の場合はNone
     """
     user = db.query(User).filter(User.name == username).first()
-    if not user or not verify_password(password, user.hashed_password):
+    if not user or not verify_password(password, user.password): #hashed_passwordをpasswordに変更
         return None
     return user
 
@@ -42,7 +43,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode.update({"exp": expire})
     

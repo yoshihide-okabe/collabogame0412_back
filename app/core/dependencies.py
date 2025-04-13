@@ -10,7 +10,7 @@ from app.api.users.schemas import TokenData  # 追加したインポート文
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
-def get_current_user(
+async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> User:
@@ -22,11 +22,28 @@ def get_current_user(
     :return: 現在のユーザー
     :raises: 認証エラーの場合はHTTPException
     """
+    # 開発環境では認証をスキップ
+    if settings.DEBUG:
+        # デフォルトユーザーを返す（ID=1のユーザーを想定）
+        default_user = db.query(User).filter(User.user_id == 1).first()
+        if default_user:
+            return default_user
+        
+        # デフォルトユーザーが存在しない場合はエラー
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="開発環境用のデフォルトユーザー（ID=1）が見つかりません。データベースにユーザーを作成してください。",
+        )
+    
+    # 本番環境の通常の認証処理
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="認証情報が無効です",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
+    if not token:
+        raise credentials_exception
     
     try:
         # JWTトークンからペイロードを取得

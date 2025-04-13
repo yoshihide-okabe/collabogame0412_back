@@ -9,8 +9,8 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     content = Column(Text, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    trouble_id = Column(Integer, ForeignKey("troubles.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    trouble_id = Column(Integer, ForeignKey("troubles.trouble_id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # リレーションシップ

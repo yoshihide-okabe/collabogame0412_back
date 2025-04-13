@@ -165,7 +165,7 @@ def update_trouble(
         raise HTTPException(status_code=404, detail="お困りごとが見つかりません")
     
     # 作成者のみ更新可能
-    if trouble.creator_user_id != current_user.id:
+    if trouble.creator_user_id != current_user.user_id:
         raise HTTPException(status_code=403, detail="自分のお困りごとのみ更新できます")
     
     # 更新処理

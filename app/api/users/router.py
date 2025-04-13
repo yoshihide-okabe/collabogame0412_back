@@ -23,7 +23,7 @@ def get_current_user_info(
     
     # レスポンスを構築
     return {
-        "id": current_user.id,
+        "id": current_user.user_id,
         "name": current_user.name,
         "categories": categories,
         "points": current_user.points,
@@ -58,7 +58,7 @@ def update_user_info(
     
     # パスワードの更新（入力されている場合）
     if user_data.password:
-        current_user.hashed_password = get_password_hash(user_data.password)
+        current_user.password = get_password_hash(user_data.password) #hashed_passwordをpasswordに変更
     
     # カテゴリーの更新（入力されている場合）
     if user_data.categories is not None:

@@ -5,7 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.core.security import get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.security import get_password_hash
+from app.core.config import settings
+
 from app.api.auth.jwt import authenticate_user, create_access_token
 from app.api.users.models import User
 from app.api.users.schemas import UserCreate, UserResponse, Token
@@ -31,7 +33,7 @@ def login_for_access_token(
         )
     
     # アクセストークンを生成
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.user_id}, 
         expires_delta=access_token_expires
@@ -63,7 +65,7 @@ def login(
         )
     
     # アクセストークンを生成
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.user_id}, 
         expires_delta=access_token_expires
@@ -115,7 +117,7 @@ def register_user(
     db.refresh(user)
     
     # アクセストークンを生成
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.user_id}, 
         expires_delta=access_token_expires
