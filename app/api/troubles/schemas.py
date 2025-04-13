@@ -44,3 +44,7 @@ class TroubleCategoryResponse(BaseModel):
     
     class Config:
         orm_mode = True
+        
+# 追加: カテゴリー作成用スキーマ
+class TroubleCategoryCreate(BaseModel):
+    name: str = Field(..., min_length=1, description="カテゴリー名")

@@ -4,6 +4,15 @@ from sqlalchemy.sql import func
 
 from app.core.database import Base
 
+class TroubleCategory(Base):
+    __tablename__ = "trouble_categories"
+
+    category_id = Column(Integer, primary_key=True, index=True)
+    name = Column(Text, nullable=False)
+    
+    # リレーションシップ
+    troubles = relationship("Trouble", back_populates="category")
+
 class Trouble(Base):
     __tablename__ = "troubles"
 
