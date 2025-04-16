@@ -20,6 +20,68 @@ from app.api.projects.schemas import (
 
 router = APIRouter()
 
+# ここから新しく追加するコード
+@router.get("/user", response_model=List[ProjectResponse])
+def get_user_projects(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """現在のユーザーが作成したプロジェクトのみを取得する"""
+    user_id = current_user.user_id
+    
+    # ユーザーが作成したプロジェクトを取得
+    user_projects = (
+        db.query(CoCreationProject)
+        .filter(CoCreationProject.creator_user_id == user_id)
+        .order_by(CoCreationProject.created_at.desc())
+        .all()
+    )
+
+    # プロジェクトをレスポンススキーマに変換
+    result = []
+    for project in user_projects:
+        # お気に入り判定
+        is_favorite = db.query(UserProjectFavorite).filter(
+            UserProjectFavorite.user_id == user_id,
+            UserProjectFavorite.project_id == project.project_id
+        ).first() is not None
+
+        # プロジェクト作成者の情報取得
+        creator = db.query(User).filter(User.user_id == project.creator_user_id).first()
+
+        # カテゴリー情報の取得
+        category = None
+        if hasattr(project, 'category_id') and project.category_id:
+            category = db.query(ProjectCategory).filter(
+                ProjectCategory.category_id == project.category_id
+            ).first()
+
+        # ダミーのいいね数とコメント数
+        likes = 24  # TODO: 実際のロジックに置き換える
+        comments = 8  # TODO: 実際のロジックに置き換える
+
+        result.append(ProjectResponse(
+            project_id=project.project_id,
+            title=project.title,
+            summary=project.summary if hasattr(project, 'summary') else None,
+            description=project.description,
+            creator_user_id=project.creator_user_id,
+            creator_name=creator.name if creator else "不明",
+            created_at=project.created_at,
+            updated_at=project.updated_at if hasattr(project, 'updated_at') else None,
+            likes=likes,
+            comments=comments,
+            is_favorite=is_favorite,
+            category_id=project.category_id if hasattr(project, 'category_id') else None,
+            category=CategoryResponse(
+                category_id=category.category_id,
+                name=category.name
+            ) if category else None
+        ))
+    
+    return result
+# ここまでが新しく追加するコード
+
 @router.get("/", response_model=ProjectListResponse)
 def get_projects(
     db: Session = Depends(get_db),

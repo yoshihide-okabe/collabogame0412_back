@@ -2,28 +2,29 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
 
-class TroubleBase(BaseModel):
-    title: str = Field(..., min_length=1, max_length=100, description="お困りごとのタイトル")
-    description: str = Field(..., min_length=10, max_length=1000, description="お困りごとの詳細説明")
-    category_id: int = Field(..., description="お困りごとのカテゴリーID")  # 型を修正
-    status: Optional[str] = Field(None, description="お困りごとの状態 ('未解決' または '解決')")
-
-class TroubleCreate(TroubleBase):
+    
+class TroubleCreate(BaseModel):
     project_id: int = Field(..., description="関連するプロジェクトID")
+    category_id: int = Field(..., description="お困りごとのカテゴリーID")
+    description: str = Field(..., min_length=10, max_length=1000, description="お困りごとの詳細説明")
+    status: Optional[str] = Field("未解決", description="お困りごとの状態 ('未解決' または '解決')")
 
-class TroubleUpdate(TroubleBase):
-    title: Optional[str] = Field(None, min_length=1, max_length=100)
+    
+class TroubleUpdate(BaseModel):
     description: Optional[str] = Field(None, min_length=10, max_length=1000)
     category_id: Optional[int] = Field(None)
-    status: Optional[str] = Field(None)
+    status: Optional[str] = Field(None)    
 
-class TroubleResponse(TroubleBase):
-    id: int
+class TroubleResponse(BaseModel):
+    trouble_id: int
+    description: str
+    category_id: int
     project_id: int
-    project_title: str
-    creator_user_id: int  # フィールド名を統一
-    creator_name: str     # フィールド名を統一
+    project_title: str  # router.pyで使用されているフィールド
+    creator_user_id: int
+    creator_name: str
     created_at: datetime
+    status: str
     comments: int = 0
 
     class Config:

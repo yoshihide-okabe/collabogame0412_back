@@ -23,6 +23,7 @@ from app.api.projects.router import router as projects_router
 from app.api.users.router import router as users_router
 from app.api.messages.router import router as messages_router
 from app.api.auth.router import router as auth_router
+from app.api.troubles.categories import router as trouble_categories_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -42,9 +43,11 @@ app.add_middleware(
 # ルーターの追加
 app.include_router(troubles_router, prefix=f"{settings.API_V1_STR}/troubles", tags=["troubles"])
 app.include_router(projects_router, prefix=f"{settings.API_V1_STR}/projects", tags=["projects"])
-app.include_router(users_router, prefix=f"{settings.API_V1_STR}/api/users", tags=["users"])
-app.include_router(messages_router, prefix=f"{settings.API_V1_STR}/api/messages", tags=["messages"])
-app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
+app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["users"])
+app.include_router(messages_router, prefix=f"{settings.API_V1_STR}/messages", tags=["messages"])
+app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+# 追加: トラブルカテゴリールーターを追加
+app.include_router(trouble_categories_router, prefix=f"{settings.API_V1_STR}/trouble-categories", tags=["trouble-categories"])
 
 # ルートレベルに /token エンドポイントを追加
 app.post("/token", response_model=Token)(login_for_access_token)
